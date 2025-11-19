@@ -1,0 +1,52 @@
+# Python 기본 라이브러리
+numpy>=1.21.0
+pandas>=1.3.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# 이미지 처리
+opencv-python>=4.5.0
+opencv-contrib-python>=4.5.0
+Pillow>=8.3.0
+
+# 머신러닝
+scikit-learn>=1.0.0
+xgboost>=1.5.0
+lightgbm>=3.3.0
+optuna>=3.0.0
+
+# 딥러닝
+torch>=1.10.0
+torchvision>=0.11.0
+tensorflow>=2.8.0
+
+# Transformers (오디오 감정 분석)
+transformers>=4.20.0
+
+# 오디오 처리
+librosa>=0.9.0
+soundfile>=0.10.0
+yt-dlp>=2022.0.0
+
+# Google Cloud (OCR)
+google-cloud-vision>=3.0.0
+
+# 색상 처리
+webcolors>=1.11.0
+
+# 유틸리티
+tqdm>=4.62.0
+emoji>=2.0.0
+unidecode>=1.3.0
+
+# OpenAI (제목 피처 추출, 선택사항)
+openai>=1.0.0
+
+# Jupyter
+jupyter>=1.0.0
+ipykernel>=6.0.0
+ipywidgets>=7.6.0
+
+# 기타
+python-dotenv>=0.19.0
+requests>=2.26.0

@@ -1,0 +1,110 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data
+data/raw/
+data/processed/
+data/models/
+*.csv
+*.pkl
+*.h5
+*.pt
+*.pth
+*.onnx
+
+# Audio/Video
+*.mp3
+*.mp4
+*.m4a
+*.wav
+temp_audio/
+tempAudio/
+
+# Images
+*.jpg
+*.jpeg
+*.png
+*.gif
+thumbnails_image/
+images/
+
+# Google Cloud
+*.json
+!package.json
+asac-ml-pjt11-*.json
+
+# Optuna
+optuna_pkl/
+*.db
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+temp/
+tmp/
+cache/
+
+# Results
+results/
+face_analysis_results/
+visualized_images/
+analysis_data/
+
+# YouTube downloads
+youtube/
+
+# 기타
+*.bak
+*.swp
+*.tmp
+
+# 레거시 코드 (리팩토링 전 원본)
+legacy/
+
+# 문서 (리팩토링 보고서)
+REFACTORING_REPORT.md
