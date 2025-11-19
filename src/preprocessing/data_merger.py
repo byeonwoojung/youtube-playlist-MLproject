@@ -9,6 +9,14 @@
 - 오디오 음악 피처 (Audio Quantitative): BPM, 피치, 에너지 등
 - 제목 피처: 이모지, 해시태그, 문자 길이 등
 - 메타 피처: 구독자 수, 업로드 날짜, 콘텐츠 타입 등
+
+⚠️ 모델링에서 제외되는 피처:
+   - subscriber_count (구독자 수)
+   - colorsDaily_matchScore, colorsSensibility_matchScore
+     → 대신 이 둘의 최댓값인 colorsTheme_matchScore 사용
+   - brightness_weightedStd (대신 brightness_weightedStd_scaledSigmoid 사용)
+   - texture_sharpness_scaled (대신 원본 texture_sharpness 사용)
+   - colorsCluster_0~44 전체 (모델링 시 상위 10개만 사용)
 """
 
 import os

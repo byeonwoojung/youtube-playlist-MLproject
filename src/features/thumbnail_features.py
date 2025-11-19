@@ -12,6 +12,13 @@ YouTube 썸네일 이미지로부터 다양한 감성적 피처를 추출합니�
 
 참고: 오디오 감정 피처(Audio Emotional)는 audio_qualitative.py에서 처리됩니다.
       - happy, sad, angry, fear, surprise, disgust, neutral
+
+⚠️ 모델링에서 제외된 피처:
+   - colorsDaily_matchScore, colorsSensibility_matchScore 
+     → 대신 이 둘의 최댓값인 colorsTheme_matchScore 사용
+   - brightness_weightedStd (대신 brightness_weightedStd_scaledSigmoid 사용)
+   - texture_sharpness_scaled (대신 원본 texture_sharpness 사용)
+   - colorsCluster_0~44 전체 (모델링 시 상위 10개만 colorRank_1~10으로 변환)
 """
 
 import os
@@ -28,7 +35,7 @@ warnings.filterwarnings('ignore')
 # 상대 경로 import를 위한 설정
 sys.path.append(str(Path(__file__).parent.parent))
 
-# Google Vision API 설정 (4_2에서 사용)
+# Google Vision API 설정
 from google.cloud import vision
 import re
 from concurrent.futures import ThreadPoolExecutor
@@ -602,7 +609,7 @@ class ThumbnailFeatureExtractor:
 # ========================================
 
 if __name__ == "__main__":
-    # 설정 (원본 코드 기준 경로)
+    # 설정
     IMAGE_FOLDER = "../thumbnails_image/raw_thumbnails"
     OUTPUT_DIR = "../rawData/thumbnails"
     # Google Cloud 인증 파일 경로 (환경변수 사용 권장)
