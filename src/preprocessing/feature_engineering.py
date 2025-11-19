@@ -10,6 +10,10 @@
 
 Target Variable: log_views (로그 변환된 조회수)
 평가 지표: RMSE (Root Mean Squared Error)
+
+⚠️ 모델링에서 제외되는 피처:
+   - days_before_reference_ceiled (경과일 수)
+   - 피처 엔지니어링으로 생성되나 최종 모델에서는 제외됨
 """
 
 import os

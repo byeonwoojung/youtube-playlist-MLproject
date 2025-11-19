@@ -1,7 +1,5 @@
-# audio_batch_extractor.py (5_1, 5_2, 5_3 통합 버전)
-
 """
-오디오 정량적 피처 추출 모듈 (5_1, 5_2, 5_3 통합)
+오디오 정량적 피처 추출 모듈
 
 YouTube URL에서 오디오를 다운로드하고 정량적 피처를 추출합니다:
 - BPM (템포)
@@ -10,8 +8,6 @@ YouTube URL에서 오디오를 다운로드하고 정량적 피처를 추출합�
 - Spectral Centroid (음색 밝기)
 - Speech Rate (발화 속도)
 - Initial Silence (초기 무음)
-
-원본: 5_1_audio_quantitative.py, 5_2_audio_quantitative_errorRetry.py, 5_3_audio_postProcess.ipynb
 """
 
 import os
@@ -37,7 +33,7 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 
 
 # ========================================
-# 유틸리티 함수 (5_1 원본)
+# 유틸리티 함수
 # ========================================
 
 def extract_video_id(url):
@@ -59,13 +55,12 @@ def get_audio_path(video_id):
 
 
 # ========================================
-# 피처 추출 함수 (5_1 원본)
+# 피처 추출 함수
 # ========================================
 
 def process_video(url):
     """
     단일 YouTube 비디오 처리 (다운로드 + 피처 추출)
-    원본: 5_1_audio_quantitative.py의 process_video()
     """
     video_id = extract_video_id(url)
     result = {
@@ -124,13 +119,12 @@ def process_video(url):
 
 
 # ========================================
-# 1단계: 전체 영상 처리 (5_1 원본)
+# 1단계: 전체 영상 처리
 # ========================================
 
 def main():
     """
     전체 YouTube URL 처리
-    원본: 5_1_audio_quantitative.py의 main()
     """
     df = pd.read_csv('../rawData/youtubeInfo/allYoutubeInfo_themeFiltered.csv')
     video_data = [url for url in df["video_url"] if extract_video_id(url)]
@@ -178,7 +172,6 @@ def main():
 def merge_temp_batches():
     """
     배치 파일 병합
-    원본: 5_1_audio_quantitative.py의 merge_temp_batches()
     """
     import glob
 
@@ -194,13 +187,12 @@ def merge_temp_batches():
 
 
 # ========================================
-# 2단계: 에러 재시도 (5_2 원본)
+# 2단계: 에러 재시도
 # ========================================
 
 def retry_error_videos():
     """
     에러 발생한 영상만 재시도
-    원본: 5_2_audio_quantitative_errorRetry.py의 main()
     """
     df = pd.read_csv(OUTPUT_FILE)
     error_rows = df[df["error"].notnull()]
@@ -218,13 +210,12 @@ def retry_error_videos():
 
 
 # ========================================
-# 3단계: 후처리 (5_3 원본)
+# 3단계: 후처리
 # ========================================
 
 def postprocess_audio():
     """
     오디오 정량적 피처 후처리
-    원본: 5_3_audio_postProcess.ipynb
     
     1. 원본 + 재시도 CSV 병합
     2. BPM 리스트 문자열 → 숫자 변환
