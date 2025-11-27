@@ -18,14 +18,14 @@
 
 ### 프로젝트 목표
 
-YouTube 플레이리스트 영상의 **감성적 피처(썸네일, 오디오, 제목)**를 통합 분석하여 조회수를 예측하는 머신러닝 모델을 구축합니다.
+YouTube 플레이리스트 영상의 **감성적 피처(섬네일, 오디오, 제목)**를 통합 분석하여 조회수를 예측하는 머신러닝 모델을 구축합니다.
 
 ### 🎯 주요 특징
 
-- **썸네일 분석**: 텍스트 비율, 상위 색상 10개, 밝기 대비, 질감, 총 색상 수, 얼굴 탐지, 객체 탐지, 색상 테마 일관성
+- **섬네일 분석**: 색상과 감성·일상 테마 정합도, 텍스트 비율, 상위 색상 10개, 밝기 대비, 거친 질감, 주요 정면얼굴 수, 주요 객체 요소 등
 - **오디오 분석**: 7가지 감정 분류 (`happy`, `sad`, `angry`, `fear`, `surprise`, `disgust`, `neutral`), 음악적 특성 (BPM, 피치, 에너지, 발화 속도 등)
-- **제목 분석**: 이모지 여부, 특수문자, 문자 길이, 해시태그 개수
-- **시간대 분석**: 업로드 시간대 원핫인코딩, 시간대-콘텐츠 매칭
+- **제목 분석**: 오감자극 표현 여부, 관심유도 표현 정도, 이모지 여부, 문자 길이 등
+- **메타 데이터 분석**: 해시태그 개수, 업로드 시간대 원핫인코딩, 시간대-콘텐츠 테마 매칭
 
 ### 📊 연구 성과
 
@@ -54,7 +54,7 @@ youtube-playlist-MLproject/
 ├── src/                            # 소스 코드
 │   ├── features/                   # 피처 추출 모듈
 │   │   ├── __init__.py
-│   │   ├── thumbnail_features.py  # 썸네일 피처 (통합)
+│   │   ├── thumbnail_features.py  # 섬네일 피처 (통합)
 │   │   ├── face_detection.py      # 얼굴 탐지
 │   │   ├── audio_quantitative.py  # 오디오 정량적 피처
 │   │   ├── audio_qualitative.py   # 오디오 감정 분석
@@ -110,7 +110,7 @@ data/
 │   ├── youtubeInfo/
 │   │   └── allYoutubeInfo_themeFiltered.csv
 │   ├── thumbnails/
-│   │   └── (썸네일 이미지 파일들)
+│   │   └── (섬네일 이미지 파일들)
 │   ├── audio/
 │   │   └── (오디오 파일들)
 │   └── titles/
@@ -131,7 +131,7 @@ from src.features.thumbnail_features import ThumbnailFeatureExtractor
 from src.preprocessing.data_merger import merge_all_features
 from src.preprocessing.feature_engineering import engineer_features
 
-# 1. 썸네일 피처 추출
+# 1. 섬네일 피처 추출
 extractor = ThumbnailFeatureExtractor(google_credentials_path="your_credentials.json")
 extractor.extract_all_features(
     image_folder="data/raw/thumbnails",
@@ -165,19 +165,21 @@ jupyter notebook notebooks/model_analysis.ipynb
 
 ## 📊 주요 피처
 
-> **Note**: 본 섹션은 **실제 모델링에 사용된 피처**만 포함합니다.  
-> 추출되었으나 모델링에서 제외된 피처들: `subscriber_count`, `days_before_reference_ceiled`, `colorsDaily_matchScore`, `colorsSensibility_matchScore` (통합된 `colorsTheme_matchScore` 사용), `brightness_weightedStd`, `texture_sharpness_scaled`, `colorsCluster_0~44` (상위 10개만 사용)### 1. 썸네일 피처 (Thumbnail Features)
+> **Note**: 본 섹션은 **실제 모델링에 사용된 피처**만 포함합니다.
+> 추출되었으나 모델링에서 제외된 피처들: `subscriber_count`, `days_before_reference_ceiled`, `colorsDaily_matchScore`, `colorsSensibility_matchScore` (통합된 `colorsTheme_matchScore` 사용), `brightness_weightedStd`, `texture_sharpness_scaled`, `colorsCluster_0~44` (상위 10개만 사용)
+
+### 1. 섬네일 피처 (Thumbnail Features)
 
 | 피처                                             | 설명                         | 추출 방법          | 모델 사용 |
 | ------------------------------------------------ | ---------------------------- | ------------------ | --------- |
-| `text_ratio`                                   | 썸네일 내 텍스트 면적 비율   | Google Vision OCR  | ✅        |
+| `text_ratio`                                   | 섬네일 내 텍스트 면적 비율   | Google Vision OCR  | ✅        |
 | `colorRank_1~10`                               | 상위 10개 색상 클러스터 비율 | K-Means 클러스터링 | ✅        |
 | `total_colors`                                 | 사용된 색상 클러스터 개수    | 색상 다양성        | ✅        |
 | `brightness_contrast`                          | 밝기 대비 (Sigmoid 변환)     | Grayscale 분석     | ✅        |
 | `texture_sharpness`                            | 질감 및 선명도               | Laplacian 변환     | ✅        |
 | `person`, `animal`, `anime`, `landscape` | 객체 탐지                    | GPT-4o Vision API  | ✅        |
 | `total_faces`, `frontal_faces_8_percent`     | 얼굴 탐지 및 정면 얼굴       | YuNet 모델         | ✅        |
-| `colorsTheme_matchScore`                       | 색상 감성•일상 테마 일치도 | LAB 거리 기반 매칭 | ✅        |
+| `colorsTheme_matchScore`                       | 색상 감성•일상 테마 일치도  | LAB 거리 기반 매칭 | ✅        |
 
 ### 2. 오디오 피처 (Audio Features)
 
@@ -214,7 +216,7 @@ jupyter notebook notebooks/model_analysis.ipynb
 | ------------------------------------------------------------------------------------ | ---------------------------- | --------- |
 | `time_midnight`, `time_morning`, `time_noon`, `time_evening`, `time_night` | 업로드 시간대                | ✅        |
 | `time_match_content`                                                               | 시간대-콘텐츠 타입 매칭 여부 | ✅        |
-| `text_char_combo`                                                                  | 썸네일 텍스트 × 제목 길이   | ✅        |
+| `text_char_combo`                                                                  | 섬네일 텍스트 × 제목 길이   | ✅        |
 | `object_complexity`                                                                | 객체 요소 복잡도             | ✅        |
 
 ---
@@ -246,39 +248,45 @@ jupyter notebook notebooks/model_analysis.ipynb
 
 → **평균제곱근 오차(RMSE)의 값이 가장 낮은 XGBoost 선택**
 
-### 주요 Feature Importance (Top 10)
-
-1. `subscriber_count` - 구독자 수
-2. `audio_emotional` -`happy `, `sad` 등 감정 확률
-3. `text_ratio` - 썸네일 텍스트 비율
-4. `colorsCluster_*` - 색상 클러스터 분포
-5. `frontal_faces_8_percent` - 정면 얼굴 수
-6. `bpm` - 음악 템포
-7. `brightness_std` - 밝기 대비
-8. `time_match_content` - 시간대 매칭
-9. `object_complexity` - 객체 복잡도
-10. `hashtag_count` - 해시태그 개수
-
 ### 연구 결론 및 제안
 
-본 연구를 통해 다음과 같은 결론을 도출했습니다:
+### 주요 Feature
+
+**Best Model (XGBoost) SHAP 분석 기준:**
+
+-`text_ratio` - 섬네일 텍스트 비율
+-`hashtag_count` - 해시태그 개수
+-`texture_sharpness` - 섬네일 거친 질감 정도
+-`char_length` - 제목 문자 길이
+-`colorRank_1`, `colorRank_2`, `colorRank_3`, `colorRank_5`, `colorRank_6` - 상위 색상 클러스터 면적 비율
+-`anime` - 애니메이션 객체 탐지
+-`emoji_ratio` - 이모지 비율
+-`brightness_contrast` - 밝기 대비
+-`colorsTheme_matchScore` - 색상 감성•일상 테마 일치도
+-`attention_score` - 관심유도 표현 정도
+
+본 연구를 통해 다음과 같은 결론을 도출했습니다.
 
 #### 메타적 요소
 
-- **유튜브 특성상 해시태그 수는 알고리즘과 직접 연결됨**: 크리나, 해시태그 수가 과도하게 많을수록 오히려 스팸으로 인식될 가능성이 있으므로 역효과 추의
+- **유튜브 특성상 해시태그 수는 알고리즘과 직접 연결됨**: **해시태그 수가 과도하게 많을수록** 오히려 스팸으로 인식될 가능성이 있으므로 **역효과 주의**
+- **업로드 시간대가 밤(21~24시)일 때** 상대적으로 **낮은 조회수** 경향성
 
-#### 썸네일
+#### 섬네일
 
-- **텍스트 비율이 높을 시 과도한 정보 전달로 인해 역효과가 능성이 있음**: 명확 대비가 낮은 (전체적으로 밝거나 어두운) 섬네일은 섬네일은 실내에 적절히 부정적 영향성
-- **업로드 시간대가 밤(21~24시)일 때 상대적으로 낮은 조회수 경향성**
+- **텍스트 비율이 높을 시 과도한 정보 전달로 인해 역효과 가능성이 있음**
+- **명암 대비가 낮은** (전체적으로 밝거나 어두운) 섬네일은 **안정적·감성적 느낌을 주며 긍정적 영향**이 있음
+- **감성·일상 테마 정합도 점수**(고바야시 이미지 스케일 활용한 피처)가 **높을 때** **조회수가 높은 경향이 있음**
 
 #### 제목
 
-- **이모티콘 비율이 과도하게 높을 시 심리도를 하락시키고, 상반되게 낮을 수 있음**: 감성·일상 테마의 플레이리스트 콘텐츠에서는 **자극적이고 관심/흥미를 유도하는 표현**이 많을수록 조회수 증가하는 경향이 있음
+- **이모티콘 비율이 과도하게 높을 시** 신뢰도를 하락시키고, **산만한 느낌을 주어 조회수에 부정적 영향**이 있음
+- 감성·일상 테마의 플레이리스트 콘텐츠에서는 **자극적이고 관심/흥미를 유도하는 표현**이 많을수록 조회수 증가하는 경향이 있음
 
 #### 오디오
 
-- **청공 1분 오디오의 스펙트럼 평균 조파수가 낮을수록 부드럽고 감성적인 분위기가 낮춰 수 있음**: **오디오 감정이 기쁨(happy), 슬픔(sad)일 때** 감성·일상 테마 콘텐츠의 정서와 조회수가 높은 경향 있음
+- **첫곡 1분 오디오의 스펙트럼 평균 조파수가 낮을수록 부드럽고 감성적인 분위기가 있으며, 조회수에 긍정적 영향 있음**
+- **오디오 감정이 기쁨(happy), 슬픔(sad)일 때** 감성·일상 테마 콘텐츠의 **조회수가 높은 경향 있음**
 
 ---
 
@@ -287,12 +295,12 @@ jupyter notebook notebooks/model_analysis.ipynb
 ### 핵심 라이브러리
 
 - **데이터 처리**: pandas, numpy
-- **이미지 처리**: OpenCV, Pillow
-- **머신러닝**: scikit-learn, XGBoost, LightGBM, Optuna (트리 기반 모델)
-- **딥러닝**: TensorFlow, PyTorch, transformers
+- **이미지 처리**: OpenCV
+- **머신러닝**: scikit-learn, XGBoost, LightGBM, RandomForest, Optuna (트리 기반 모델)
+- **딥러닝**: TensorFlow, PyTorch, Transformers(Wav2Vec2)
 - **오디오 처리**: librosa, yt-dlp
-- **시각화**: matplotlib, seaborn
-- **OCR**: Google Cloud Vision API
+- **시각화**: matplotlib, seaborn, SHAP
+- **외부 API**: Google Cloud Vision API (OCR), OpenAI API (제목 피처)
 
 ### 연구 방법론
 
@@ -309,7 +317,7 @@ jupyter notebook notebooks/model_analysis.ipynb
 
 ## 📝 사용 예시
 
-### 썸네일 피처 추출
+### 섬네일 피처 추출
 
 ```python
 from src.features.thumbnail_features import ThumbnailTextExtractor, ThumbnailColorExtractor
@@ -375,15 +383,15 @@ df_final = engineer_features(
 
 YouTube 영상의 조회수는 다양한 요인에 영향을 받습니다. 기존 연구들은 주로 메타데이터(제목, 태그, 설명)에 집중했지만, 본 연구는 **감성적 요소**에 주목했습니다:
 
-- 썸네일의 시각적 매력도
+- 섬네일의 색상과 감성·일상 테마 정합도
+- 제목의 오감 자극 표현 여부, 관심유도 표현 정도
 - 오디오의 감정적 반응
-- 업로드 시간대와 콘텐츠 타입의 조화
 
 ### 연구 방법론
 
 1. **데이터 수집**: YouTube API를 통한 영상 메타데이터 수집
 2. **피처 추출**:
-   - 썸네일: OCR, 색상 분석, 객체/얼굴 탐지
+   - 섬네일: OCR 활용한 텍스트 면적 비율, 색상 분석, 객체/얼굴 탐지
    - 오디오: 감정 분류, 음악적 특성
    - 제목: 텍스트 분석
 3. **피처 엔지니어링**: 시간대 매칭, 복합 피처 생성
@@ -424,7 +432,7 @@ YouTube 영상의 조회수는 다양한 요인에 영향을 받습니다. 기�
 
 **변우중, 김홍인, 이진범**
 
-- GitHub: [@byeonwoojung](https://github.com/byeonwoojung), [@hongin12](https://github.com/hongin12)
+- GitHub: [@byeonwoojung](https://github.com/byeonwoojung), [@hongin12](https://github.com/hongin12), [@jinbeom92](https://github.com/jinbeom92)
 - Repository: [youtube-playlist-MLproject](https://github.com/byeonwoojung/youtube-playlist-MLproject)
 
 ---
